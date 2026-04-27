@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         REPORTS_DIR = "reports\\${new Date().format('yyyyMMdd')}"
-        VENV_DIR    = "venv"
+        VENV_DIR    = ".venv"
     }
 
     options {
@@ -40,11 +40,11 @@ pipeline {
             steps {
                 echo "Checking if virtual environment exists..."
                 powershell '''
-                    if (Test-Path "venv\\Scripts\\activate") {
+                    if (Test-Path ".venv\\Scripts\\activate") {
                         Write-Host "Virtual environment already exists, skipping creation."
                     } else {
                         Write-Host "Creating virtual environment..."
-                        python -m venv venv
+                        python -m venv .venv
                         if ($LASTEXITCODE -ne 0) {
                             throw "Failed to create virtual environment!"
                         }
@@ -58,8 +58,8 @@ pipeline {
             steps {
                 echo "Installing requirements from requirements.txt..."
                 powershell '''
-                    venv\\Scripts\\pip install --upgrade pip
-                    venv\\Scripts\\pip install -r requirements.txt
+                    .venv\\Scripts\\pip install --upgrade pip
+                    .venv\\Scripts\\pip install -r requirements.txt
                     if ($LASTEXITCODE -ne 0) {
                         throw "Failed to install requirements!"
                     }
@@ -74,7 +74,7 @@ pipeline {
                 powershell """
                     \$reportDir = "${REPORTS_DIR}"
                     New-Item -ItemType Directory -Force -Path \$reportDir | Out-Null
-                    venv\\Scripts\\robot -d "\$reportDir" tests
+                    .venv\\Scripts\\robot -d "\$reportDir" tests
                     \$exitCode = \$LASTEXITCODE
                     if (\$exitCode -eq 1) {
                         throw "Robot Framework encountered a critical error!"
@@ -89,7 +89,7 @@ pipeline {
             steps {
                 echo "Generating RobotMetrics HTML report..."
                 powershell """
-                    venv\\Scripts\\robotmetrics --inputpath ${REPORTS_DIR}
+                    .venv\\Scripts\\robotmetrics --inputpath ${REPORTS_DIR}
                     if (\$LASTEXITCODE -ne 0) {
                         Write-Host "Warning: RobotMetrics report generation failed."
                     } else {
