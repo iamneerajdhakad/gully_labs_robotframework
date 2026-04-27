@@ -1,1 +1,1 @@
-﻿feat: early submissions hits different 😌🚀
+﻿feat: early submission hits different 😌🚀
