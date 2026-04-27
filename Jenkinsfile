@@ -89,7 +89,7 @@ pipeline {
             steps {
                 echo "Generating RobotMetrics HTML report..."
                 powershell """
-                    .venv\\Scripts\\robotmetrics --inputpath ${REPORTS_DIR}
+                    .\\.venv\\Scripts\\python -m robotmetrics --inputpath "${REPORTS_DIR}"
                     if (\$LASTEXITCODE -ne 0) {
                         Write-Host "Warning: RobotMetrics report generation failed."
                     } else {
